@@ -63,6 +63,8 @@ static QString profileText(const struct dive &dive)
 void exportOneProfile(ProfileScene &profile, const struct dive &dive, const QString &filename, bool diveinfo,
 		      int width, int height)
 {
+	int profileWidth = profileScale * width;
+	int profileHeight = profileScale * height;
 	QImage image = QImage(QSize(width, height), QImage::Format_RGB32);
 	QPainter paint;
 	paint.begin(&image);
@@ -106,7 +108,7 @@ void exportProfile(QString filename, bool selected_only, ExportCallback &cb, boo
 		cb.setProgress(done++ * 1000 / todo);
 		QString fn = count ? fi.path() + QDir::separator() + fi.completeBaseName().append(QString("-%1.").arg(count)) + fi.suffix()
 				   : filename;
-		exportOneProfile(*profile, *dive, fn, diveinfo);
+		exportOneProfile(*profile, *dive, fn, diveinfo, width, height);
 		++count;
 	}
 }
@@ -171,7 +173,7 @@ void export_TeX(const char *filename, bool selected_only, bool plain, ExportCall
 		if (selected_only && !dive->selected)
 			continue;
 		cb.setProgress(done++ * 1000 / todo);
-		exportOneProfile(*profile, *dive, texdir.filePath(QString("profile%1.png").arg(dive->number)), false);
+		exportOneProfile(*profile, *dive, texdir.filePath(QString("profile%1.png").arg(dive->number)), false, 800, 600);
 		struct tm tm;
 		utc_mkdate(dive->when, &tm);
 
